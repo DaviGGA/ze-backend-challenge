@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo
+    container_name: ze_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=ze-delivery
+    restart: always
+  redis:
+    image: redis
+    container_name: ze_redis
+    ports:
+      - "6379:6379"
+    restart: always
