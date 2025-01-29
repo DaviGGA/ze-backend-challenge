@@ -29,6 +29,7 @@ const Schema = new mongoose.Schema<IPartner>(
     document: {
       type: String,
       required: true,
+      unique: true
     },
     coverageArea: {
       type: {
