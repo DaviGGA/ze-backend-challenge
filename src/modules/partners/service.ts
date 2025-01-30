@@ -15,6 +15,17 @@ async function createPartner(partnerBody: CreatePartner): Promise<IPartner> {
   return await Partner.create(partnerBody);
 }
 
+async function findPartnerById(id: string): Promise<IPartner> {
+  const foundPartner = await Partner.findById(id);
+
+  if(!foundPartner) {
+    throw new Error("Partner not found");
+  }
+
+  return foundPartner;
+}
+
 export const service = {
-  createPartner
+  createPartner,
+  findPartnerById
 } 
