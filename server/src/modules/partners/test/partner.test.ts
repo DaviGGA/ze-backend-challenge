@@ -4,11 +4,13 @@ import http from "http";
 import request  from "supertest";
 import { app } from "../../../app";
 import mongoose from "mongoose";
+import { connectToRedis } from "../../../database/redis";
 
 let server: http.Server
 
 beforeAll(async () => {
   await connectMemoryDatabase();
+  await connectToRedis();
   server = http.createServer(app.callback());
   server.listen();
 })
@@ -47,6 +49,8 @@ describe("POST /partner", () => {
       .post("/partner")
       .send(partner)
       .expect(201)
+
+    console.log(response)
 
     expect(response.body.data.tradingName).toBe(partner.tradingName)
     expect(response.body.data.ownerName).toBe(partner.ownerName)
@@ -235,6 +239,4 @@ describe("GET partner/nearest", () => {
       
   })
 
-
-  
 })
