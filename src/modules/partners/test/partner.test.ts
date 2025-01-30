@@ -147,3 +147,94 @@ describe("GET /partner/:id", () => {
   })
 
 })
+
+describe("GET partner/nearest", () => {
+
+  it("Find the nearest partner", async () => {
+    const partners = [
+      {
+        "tradingName": "Loja A",
+        "ownerName": "John A",
+        "document": "1432132123891/0001",
+        "coverageArea": { 
+          "type": "MultiPolygon", 
+          "coordinates": [
+            [
+              [[0, 0], [4, 0], [4, 4], [0, 4], [0, 0]]
+            ]
+          ],
+        },
+        "address": { 
+          "type": "Point",
+          "coordinates": [1, 1]
+        }
+      },
+      {
+        "tradingName": "Loja B",
+        "ownerName": "John B",
+        "document": "1432132123891/0002",
+        "coverageArea": { 
+          "type": "MultiPolygon", 
+          "coordinates": [
+            [
+              [[10, 10], [14, 10], [14, 14], [10, 14], [10, 10]]
+            ]
+          ],
+        },
+        "address": { 
+          "type": "Point",
+          "coordinates": [9, 9]
+        }
+      },
+      {
+        "tradingName": "Loja C",
+        "ownerName": "John C",
+        "document": "1432132123891/0003",
+        "coverageArea": { 
+          "type": "MultiPolygon", 
+          "coordinates": [
+            [
+              [[5, 5], [9, 5], [9, 9], [5, 9], [5, 5]]
+            ]
+          ],
+        },
+        "address": { 
+          "type": "Point",
+          "coordinates": [6, 6]
+        }
+      },
+  
+    ]
+  
+    const partnerAPromise = request(server)
+      .post("/partner")
+      .send(partners[0])
+      .expect(201)
+    
+    const partnerBPromise = request(server)
+      .post("/partner")
+      .send(partners[1])
+      .expect(201)
+    
+    const partnerCPromise = request(server)
+      .post("/partner")
+      .send(partners[2])
+      .expect(201)
+  
+    await Promise.all([
+      partnerAPromise,
+      partnerBPromise,
+      partnerCPromise
+    ])
+
+    const response = await request(server)
+      .get("/partner/nearest?long=8&lat=8")
+      .expect(200)
+
+    expect(response.body.data).toMatchObject(partners[2])
+      
+  })
+
+
+  
+})
