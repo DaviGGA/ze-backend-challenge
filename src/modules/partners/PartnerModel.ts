@@ -33,7 +33,8 @@ const Schema = new mongoose.Schema<IPartner>(
     },
     coverageArea: {
       type: {
-        type: String
+        type: String,
+        default: "MultiPolygon"
       },
       coordinates: {
         type: [[[[Number, Number]]]]
@@ -41,7 +42,8 @@ const Schema = new mongoose.Schema<IPartner>(
     },
     address: {
       type: {
-        type: String
+        type: String,
+        default: "Point"
       },
       coordinates: {
         type: [Number, Number]
