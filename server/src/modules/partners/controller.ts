@@ -1,8 +1,6 @@
 import { Context } from "koa";
 import { validatePartner } from "./validators/create-partner-validator";
 import { service } from "./service";
-import { validateLatLong } from "./validators/point-validator";
-import { point } from "@turf/turf";
 import { Point } from "./@types/Point";
 
 async function createPartner(ctx: Context) {
