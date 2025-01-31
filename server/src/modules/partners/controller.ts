@@ -39,8 +39,8 @@ async function findNearestPartner(ctx: Context) {
   try {
 
     const {lat, long} = ctx.request.query as {long: string, lat: string};
-    const numberLong = parseInt(long);
-    const numberLat = parseInt(lat);
+    const numberLong = parseFloat(long);
+    const numberLat = parseFloat(lat);
     const point: Point = [numberLong, numberLat]
 
     const nearestPartner = await service.findNearestPartner(point)
@@ -55,8 +55,23 @@ async function findNearestPartner(ctx: Context) {
   }
 }
 
+async function findAllPartners(ctx: Context) {
+  try {
+    const partners = await service.findAllPartners();
+
+    ctx.status = 200
+    ctx.body = {
+      data: partners,
+      message: "Partners successfully found."
+    }
+  } catch(error) {
+    throw error
+  }
+}
+
 export const controller = {
   createPartner,
   findPartnerById,
-  findNearestPartner
+  findNearestPartner,
+  findAllPartners
 }

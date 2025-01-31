@@ -1,3 +1,4 @@
+import { map } from "zod";
 import { redisClient } from "../../database/redis";
 import { CreatePartner } from "./@types/CreatePartner";
 import { Point } from "./@types/Point";
@@ -30,7 +31,6 @@ async function findPartnerById(id: string): Promise<IPartner> {
 async function findNearestPartner(point: Point): Promise<IPartner> {
 
   const pointCacheId = `long:${point[0]};lat:${point[1]}`
-
   const foundCache = await redisClient.get(pointCacheId);
 
   if (foundCache) {
@@ -45,7 +45,14 @@ async function findNearestPartner(point: Point): Promise<IPartner> {
   const nearestPartner = partners
     .concat()
     .sort(sortByLeastDistance)
-    .find(pointInCoverage)
+    .find(partner => pointInCoverage(partner, point))
+
+  
+  
+  if(!nearestPartner) {
+    throw new Error("No partner was found. Possibly, this point isn't inside the coverage.")
+  }
+  
   
   redisClient.setEx(
     pointCacheId,
@@ -53,21 +60,26 @@ async function findNearestPartner(point: Point): Promise<IPartner> {
     JSON.stringify(nearestPartner)
   )
 
-  return nearestPartner!;
+  return nearestPartner;
 
 }
 
-const partnerDistanceTo = ({address}: IPartner, point: Point) =>
-  turf.distance(address.coordinates, point)
+async function findAllPartners() {
+  return await Partner.find();
+}
 
-const pointInCoverage = (partner: IPartner) => 
+const partnerDistanceTo = ({address}: IPartner, point: Point) =>
+  turf.distance(address.coordinates, point, {units: "meters"})
+
+const pointInCoverage = (partner: IPartner, point: Point) => 
   turf.booleanPointInPolygon(
-    turf.point(partner.address.coordinates),
+    turf.point(point),
     turf.multiPolygon(partner.coverageArea.coordinates)
   )
 
 export const service = {
   createPartner,
   findPartnerById,
-  findNearestPartner
+  findNearestPartner,
+  findAllPartners
 } 
